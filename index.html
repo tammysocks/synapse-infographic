@@ -1,0 +1,83 @@
+// Chart.js Implementation for ROI Visualization
+// Processing labels for wrapping as per requirement
+const labels = ['Current State (Chaos)', 'Future State (Architect)'];
+
+// Helper to wrap labels if > 16 chars
+const wrapLabel = (str) => {
+    if (str.length <= 16) return str;
+    const words = str.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+        if (currentLine.length + 1 + words[i].length <= 16) {
+            currentLine += ' ' + words[i];
+        } else {
+            lines.push(currentLine);
+            currentLine = words[i];
+        }
+    }
+    lines.push(currentLine);
+    return lines;
+};
+
+const processedLabels = labels.map(wrapLabel);
+
+// Ensure the script runs after the canvas element is loaded
+window.onload = function () {
+    const ctx = document.getElementById('timeChart').getContext('2d');
+    const timeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: processedLabels,
+            datasets: [
+                {
+                    label: 'Admin & Searching (The Tax)',
+                    data: [80, 10], // High admin initially, low after
+                    backgroundColor: '#C697A7', // Rose (Pain)
+                    barThickness: 50
+                },
+                {
+                    label: 'Strategic Revenue Work',
+                    data: [20, 90], // Low strategy initially, high after
+                    backgroundColor: '#3B9DA3', // Teal (Goal)
+                    barThickness: 50
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) { return value + "%" }
+                    }
+                }
+            },
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            } else {
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+};
